@@ -41,12 +41,13 @@
   (let [message
         (or
 
-         ;; Special case: unwrap s/conformer.
-         (when-let [pred-inner
-                    (conformer-pred? pred)]
-           (let [problem*
-                 (assoc problem :pred pred-inner)]
-             (problem->error problem*)))
+         ;; Resolve by a symbol.
+         (when (qualified-symbol? pred)
+           (resolve-message pred problem))
+
+         ;; Resovle by a keyword.
+         (when-let [spec (peek via)]
+           (resolve-message spec problem))
 
          ;; Special case: s/keys misses a key.
          (when-let [kw-key
@@ -55,13 +56,12 @@
                  (assoc problem :key kw-key)]
              (resolve-message ::missing-key problem*)))
 
-         ;; Resolve by a symbol.
-         (when (qualified-symbol? pred)
-           (resolve-message pred problem))
-
-         ;; Resovle by a keyword.
-         (when-let [spec (peek via)]
-           (resolve-message spec problem))
+         ;; Special case: unwrap s/conformer.
+         (when-let [pred-inner
+                    (conformer-pred? pred)]
+           (let [problem*
+                 (assoc problem :pred pred-inner)]
+             (problem->error problem*)))
 
          ;; Not found.
          (resolve-message ::default problem))]
@@ -102,10 +102,18 @@
 (defn explain [spec value]
   (when-let [{:keys [problems]}
              (explain-data spec value)]
+
+    (println "Problems:")
+    (println)
+
     (doseq [{:keys [val
                     path
                     message]} problems]
-      (println "- " message))))
+
+      (println "-" message)
+      (println " " "path:" path)
+      (println " " "value:" val)
+      (println))))
 
 
 (defn explain-str [spec value]

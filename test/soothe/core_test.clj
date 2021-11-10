@@ -126,3 +126,43 @@
             :val 0}]}
 
          (soo/explain-data ::user (assoc user :field-42 0)))))
+
+
+
+(def expected-report
+  (str/trim "
+Problems:
+
+- The value must be a string.
+  path: [:name]
+  value: nil
+
+- The value must be a fixed precision integer.
+  path: [:age]
+  value: -0
+"))
+
+
+(deftest test-explain-str
+
+  (is (=
+
+       expected-report
+
+       (str/trim
+        (soo/explain-str
+         ::user
+         (assoc user :name nil :age "-0"))))))
+
+
+(deftest test-explain-print
+
+  (is (=
+
+       expected-report
+
+       (str/trim
+        (with-out-str
+          (soo/explain
+           ::user
+           (assoc user :name nil :age "-0")))))))
