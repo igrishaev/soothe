@@ -1,6 +1,6 @@
-(ns quiet.core-test
+(ns soothe.core-test
   (:require
-   [quiet.core :as q]
+   [soothe.core :as soo]
 
    [clojure.string :as str]
    [clojure.spec.alpha :as s]
@@ -22,7 +22,7 @@
 
 (deftest test-ok
 
-  (is (nil? (q/explain-data ::user user)))
+  (is (nil? (soo/explain-data ::user user)))
 
   (is (= {:problems
           [{:message "The value must be a string."
@@ -32,7 +32,7 @@
             :path [:age]
             :val nil}]}
 
-         (q/explain-data
+         (soo/explain-data
           ::user
           (assoc user
                  :age nil
@@ -43,17 +43,17 @@
             :path []
             :val {:name "test"}}]}
 
-         (q/explain-data
+         (soo/explain-data
           ::user
           (dissoc user :age)))))
 
 
-(q/def ::email
+(soo/def ::email
   (fn [_]
     "custom message for email spec"))
 
 
-(q/def `validate-email
+(soo/def `validate-email
   (fn [_]
     "custom message for email pred"))
 
@@ -70,10 +70,10 @@
 
 
 
-  (is (nil? (q/explain-data ::user2 (assoc user :email "test@test.com"))))
+  (is (nil? (soo/explain-data ::user2 (assoc user :email "test@test.com"))))
 
   (is (= 1
-         (q/explain-data ::user2 (assoc user :email "sdfsf"))))
+         (soo/explain-data ::user2 (assoc user :email "sdfsf"))))
 
 
   )
