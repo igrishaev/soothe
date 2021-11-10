@@ -59,9 +59,8 @@
          ;; Special case: unwrap s/conformer.
          (when-let [pred-inner
                     (conformer-pred? pred)]
-           (let [problem*
-                 (assoc problem :pred pred-inner)]
-             (problem->error problem*)))
+           (when (qualified-symbol? pred-inner)
+             (resolve-message pred-inner problem)))
 
          ;; Not found.
          (resolve-message ::default problem))]

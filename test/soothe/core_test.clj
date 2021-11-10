@@ -1,6 +1,6 @@
 (ns soothe.core-test
   (:require
-   [soothe.core :as soo]
+   [soothe.core :as sth]
 
    [clojure.string :as str]
    [clojure.spec.alpha :as s]
@@ -34,7 +34,7 @@
 
 
 (deftest test-no-errors
-  (is (nil? (soo/explain-data ::user user))))
+  (is (nil? (sth/explain-data ::user user))))
 
 
 (deftest test-wrong-type
@@ -44,7 +44,7 @@
        {:problems
         [{:message "The value must be a string." :path [:name] :val nil}]}
 
-       (soo/explain-data
+       (sth/explain-data
         ::user
         (assoc user
                :name nil)))))
@@ -57,7 +57,7 @@
             :path []
             :val {:name "Test"}}]}
 
-         (soo/explain-data
+         (sth/explain-data
           ::user
           (dissoc user :age)))))
 
@@ -69,7 +69,7 @@
             :path [:email]
             :val :not/string}]}
 
-         (soo/explain-data
+         (sth/explain-data
           ::user
           (assoc user :email :not/string)))))
 
@@ -81,30 +81,30 @@
             :path [:email]
             :val "not-an-email"}]}
 
-         (soo/explain-data
+         (sth/explain-data
           ::user
           (assoc user :email "not-an-email")))))
 
 
 (deftest test-email-custom-message
 
-  (soo/def :user/email "custom message for email")
+  (sth/def :user/email "custom message for email")
 
   (is (= {:problems
           [{:message "custom message for email"
             :path [:email]
             :val "not-an-email"}]}
 
-         (soo/explain-data
+         (sth/explain-data
           ::user
           (assoc user :email "not-an-email"))))
 
-  (soo/undef :user/email))
+  (sth/undef :user/email))
 
 
 (deftest test-fn-message
 
-  (soo/def :user/field-42
+  (sth/def :user/field-42
     (fn [{:keys [val]}]
       (format "custom message for the field-42, val: %s" val)))
 
@@ -115,9 +115,9 @@
           :path [:field-42]
           :val 0}]}
 
-         (soo/explain-data ::user (assoc user :field-42 0))))
+         (sth/explain-data ::user (assoc user :field-42 0))))
 
-  (soo/undef :user/field-42))
+  (sth/undef :user/field-42))
 
 
 (deftest test-default-message
@@ -127,7 +127,7 @@
             :path [:field-42]
             :val 0}]}
 
-         (soo/explain-data ::user (assoc user :field-42 0)))))
+         (sth/explain-data ::user (assoc user :field-42 0)))))
 
 
 (def expected-report
@@ -151,7 +151,7 @@ Problems:
        expected-report
 
        (str/trim
-        (soo/explain-str
+        (sth/explain-str
          ::user
          (assoc user :name nil :age "-0"))))))
 
@@ -164,9 +164,51 @@ Problems:
 
        (str/trim
         (with-out-str
-          (soo/explain
+          (sth/explain
            ::user
            (assoc user :name nil :age "-0")))))))
 
 
-;; conformers
+(defn ->int
+  [val]
+  (cond
+    (int? val)
+    val
+    (string? val)
+    (try
+      (Integer/parseInt val)
+      (catch Exception e
+        ::s/invalid))
+    :else
+    ::s/invalid))
+
+
+(sth/def `->int
+  "Cannot coerce the value to an integer.")
+
+
+(s/def ::config
+  (s/keys :req-un [:config/port
+                   :config/timeout]))
+
+(s/def :config/port
+  (s/conformer ->int))
+
+(s/def :config/timeout
+  (s/conformer ->int))
+
+
+(deftest test-conformer-ok
+
+  (is (=
+
+       {:problems
+        [{:message "Cannot coerce the value to an integer."
+          :path [:port]
+          :val "five"}
+         {:message "Cannot coerce the value to an integer."
+          :path [:timeout]
+          :val "dunno"}]}
+
+       (sth/explain-data
+        ::config {:port "five" :timeout "dunno"}))))

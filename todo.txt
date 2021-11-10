@@ -1,6 +1,4 @@
 
-- fix the tests
-- conformer tests
 - .en and .ru namespaces
 - dicts of defaults
 - def-multi
