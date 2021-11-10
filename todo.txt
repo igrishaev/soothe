@@ -1,0 +1,11 @@
+
+- fix the tests
+- conformer tests
+- .en and .ru namespaces
+- dicts of defaults
+- def-multi
+- cljc files
+- tests for nodejs
+- lein/release/version
+- deploy to clojars
+- readme

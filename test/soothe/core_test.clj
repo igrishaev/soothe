@@ -104,18 +104,20 @@
 
 (deftest test-fn-message
 
-  (soo/def ::user
+  (soo/def :user/field-42
     (fn [{:keys [val]}]
-      (format "custom message from fn, val: %s" val)))
+      (format "custom message for the field-42, val: %s" val)))
 
-  (is (= {:problems
-          [{:message "custom message from fn, 42"
-            :path []
-            :val 42}]}
+  (is (=
 
-         (soo/explain-data ::user 42)))
+       {:problems
+        [{:message "custom message for the field-42, val: 0"
+          :path [:field-42]
+          :val 0}]}
 
-  (soo/undef ::user))
+         (soo/explain-data ::user (assoc user :field-42 0))))
+
+  (soo/undef :user/field-42))
 
 
 (deftest test-default-message
@@ -126,7 +128,6 @@
             :val 0}]}
 
          (soo/explain-data ::user (assoc user :field-42 0)))))
-
 
 
 (def expected-report
@@ -166,3 +167,6 @@ Problems:
           (soo/explain
            ::user
            (assoc user :name nil :age "-0")))))))
+
+
+;; conformers
