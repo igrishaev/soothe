@@ -109,7 +109,7 @@
 
 
 ;;
-;; Defaults
+;; EN defaults
 ;;
 
 (load "locale/en")

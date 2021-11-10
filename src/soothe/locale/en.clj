@@ -73,5 +73,5 @@
 
 
 
-;; (./def ::missing-key "The map misses the key.")
-;; (./def ::default "The message is not found.")
+(./def ::missing-key "The map misses the key.")
+(./def ::default "The message is not found.")

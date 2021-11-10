@@ -24,19 +24,17 @@
 
   (is (nil? (soo/explain-data ::user user)))
 
-  (is (= {:problems
-          [{:message "The value must be a string."
-            :path [:name]
-            :val nil}
-           {:message "The value must be an integer."
-            :path [:age]
-            :val nil}]}
+  (is (=
 
-         (soo/explain-data
-          ::user
-          (assoc user
-                 :age nil
-                 :name nil))))
+       {:problems
+        [{:message "The value must be a string." :path [:name] :val nil}
+         {:message "The message is not found." :path [:age] :val nil}]}
+
+       (soo/explain-data
+        ::user
+        (assoc user
+               :age nil
+               :name nil))))
 
   (is (= {:problems
           [{:message "The map misses the key."
@@ -68,12 +66,13 @@
 
 (deftest test-fn
 
-
-
   (is (nil? (soo/explain-data ::user2 (assoc user :email "test@test.com"))))
 
-  (is (= 1
-         (soo/explain-data ::user2 (assoc user :email "sdfsf"))))
+  (is (=
 
+       {:problems
+        [{:message "custom message for email pred"
+          :path [:email]
+          :val "sdfsf"}]}
 
-  )
+       (soo/explain-data ::user2 (assoc user :email "sdfsf")))))
