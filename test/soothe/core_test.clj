@@ -7,7 +7,6 @@
    [clojure.test :refer [deftest is testing]]))
 
 
-
 (s/def ::user
   (s/keys :req-un [:user/name
                    :user/age]))
@@ -28,7 +27,7 @@
 
        {:problems
         [{:message "The value must be a string." :path [:name] :val nil}
-         {:message "The message is not found." :path [:age] :val nil}]}
+         {:message "The value must be a fixed precision integer." :path [:age] :val nil}]}
 
        (soo/explain-data
         ::user
@@ -37,7 +36,7 @@
                :name nil))))
 
   (is (= {:problems
-          [{:message "The map misses the key."
+          [{:message "The object misses the mandatory key 'age'."
             :path []
             :val {:name "test"}}]}
 

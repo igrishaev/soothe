@@ -1,6 +1,7 @@
 (ns soothe.core
   (:refer-clojure :exclude [def])
   (:require
+   [clojure.string :as str]
    [clojure.spec.alpha :as s]))
 
 
