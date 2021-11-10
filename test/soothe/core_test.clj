@@ -9,69 +9,120 @@
 
 (s/def ::user
   (s/keys :req-un [:user/name
-                   :user/age]))
+                   :user/age]
+          :opt-un [:user/email
+                   :user/field-42]))
 
-(s/def :user/name string?)
-(s/def :user/age int?)
+(s/def :user/name
+  string?)
+
+(s/def :user/age
+  int?)
+
+(s/def :user/email
+  (s/and string? (partial re-matches #"(.+?)@(.+?)")))
 
 
-(def user {:name "test"
-           :age 42})
+(s/def :user/field-42
+  (fn [x]
+    (= x 42)))
 
 
-(deftest test-ok
+(def user
+  {:name "Test"
+   :age 42})
 
-  (is (nil? (soo/explain-data ::user user)))
+
+(deftest test-no-errors
+  (is (nil? (soo/explain-data ::user user))))
+
+
+(deftest test-wrong-type
 
   (is (=
 
        {:problems
-        [{:message "The value must be a string." :path [:name] :val nil}
-         {:message "The value must be a fixed precision integer." :path [:age] :val nil}]}
+        [{:message "The value must be a string." :path [:name] :val nil}]}
 
        (soo/explain-data
         ::user
         (assoc user
-               :age nil
-               :name nil))))
+               :name nil)))))
+
+
+(deftest test-missing-key
 
   (is (= {:problems
           [{:message "The object misses the mandatory key 'age'."
             :path []
-            :val {:name "test"}}]}
+            :val {:name "Test"}}]}
 
          (soo/explain-data
           ::user
           (dissoc user :age)))))
 
 
-(soo/def ::email
-  (fn [_]
-    "custom message for email spec"))
+(deftest test-email-and-pred-not-string
+
+  (is (= {:problems
+          [{:message "The value must be a string."
+            :path [:email]
+            :val :not/string}]}
+
+         (soo/explain-data
+          ::user
+          (assoc user :email :not/string)))))
 
 
-(soo/def `validate-email
-  (fn [_]
-    "custom message for email pred"))
+(deftest test-email-and-pred-regex-fail
+
+  (is (= {:problems
+          [{:message "The value is incorrect."
+            :path [:email]
+            :val "not-an-email"}]}
+
+         (soo/explain-data
+          ::user
+          (assoc user :email "not-an-email")))))
 
 
-(defn validate-email [string]
-  (str/includes? string "@"))
+(deftest test-email-custom-message
 
-(s/def ::email (s/and string? validate-email))
-(s/def ::user2
-  (s/keys :req-un [:user/name :user/age ::email]))
+  (soo/def :user/email "custom message for email")
+
+  (is (= {:problems
+          [{:message "custom message for email"
+            :path [:email]
+            :val "not-an-email"}]}
+
+         (soo/explain-data
+          ::user
+          (assoc user :email "not-an-email"))))
+
+  (soo/undef :user/email))
 
 
-(deftest test-fn
+(deftest test-fn-message
 
-  (is (nil? (soo/explain-data ::user2 (assoc user :email "test@test.com"))))
+  (soo/def ::user
+    (fn [{:keys [val]}]
+      (format "custom message from fn, val: %s" val)))
 
-  (is (=
+  (is (= {:problems
+          [{:message "custom message from fn, 42"
+            :path []
+            :val 42}]}
 
-       {:problems
-        [{:message "custom message for email pred"
-          :path [:email]
-          :val "sdfsf"}]}
+         (soo/explain-data ::user 42)))
 
-       (soo/explain-data ::user2 (assoc user :email "sdfsf")))))
+  (soo/undef ::user))
+
+
+(deftest test-default-message
+
+  (is (= {:problems
+          [{:message "The value is incorrect."
+            :path [:field-42]
+            :val 0}]}
+
+         (soo/explain-data ::user (assoc user :field-42 0)))))

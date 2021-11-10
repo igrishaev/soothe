@@ -67,10 +67,6 @@
 (./def `s/spec?             "The value must be a spec.")
 (./def `s/regex?            "The value must be a regex matcher.")
 
-;; string
-
-(./def `str/blank?          "The value must be an empty string.")
-
 ;; special cases
 
 (./def ::missing-key

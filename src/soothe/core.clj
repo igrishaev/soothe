@@ -1,7 +1,6 @@
 (ns soothe.core
   (:refer-clojure :exclude [def])
   (:require
-   [clojure.string :as str]
    [clojure.spec.alpha :as s]))
 
 
@@ -86,6 +85,11 @@
 (defn def
   [kw-spec|sym-pred fn|message]
   (swap! -registry assoc kw-spec|sym-pred fn|message)
+  nil)
+
+
+(defn undef [kw-spec|sym-pred]
+  (swap! -registry dissoc kw-spec|sym-pred)
   nil)
 
 
