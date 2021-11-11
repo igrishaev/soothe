@@ -1,5 +1,4 @@
 
-- req missing key case
 - translate ru
 - cljc files
 - tests for nodejs

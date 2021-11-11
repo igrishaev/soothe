@@ -62,6 +62,19 @@
           (dissoc user :age)))))
 
 
+(deftest test-missing-quialified-key
+
+  (s/def ::sample
+    (s/keys :req [:sample/foo]))
+
+  (is (= {:problems
+           [{:message "The object misses the mandatory key 'sample/foo'."
+             :path []
+             :val {:foo 1}}]}
+
+         (sth/explain-data ::sample {:foo 1}))))
+
+
 (deftest test-email-and-pred-not-string
 
   (is (= {:problems
