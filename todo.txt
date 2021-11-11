@@ -1,9 +1,9 @@
 
-- .en and .ru namespaces
-- dicts of defaults
-- def-multi
 - cljc files
+- translate ru
 - tests for nodejs
 - lein/release/version
 - deploy to clojars
 - readme
+- docstrings
+- autodoc

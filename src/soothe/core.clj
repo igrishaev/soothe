@@ -1,7 +1,11 @@
 (ns soothe.core
-  (:refer-clojure :exclude [def])
+  (:refer-clojure :exclude [def defmulti])
   (:require
+   [soothe.en :as en]
    [clojure.spec.alpha :as s]))
+
+
+(alias '. 'soothe.core)
 
 
 (defonce ^:private
@@ -87,8 +91,19 @@
   nil)
 
 
+(defn defmulti
+  [key->messages]
+  (swap! -registry merge key->messages)
+  nil)
+
+
 (defn undef [kw-spec|sym-pred]
   (swap! -registry dissoc kw-spec|sym-pred)
+  nil)
+
+
+(defn undef-all []
+  (reset! -registry nil)
   nil)
 
 
@@ -124,4 +139,4 @@
 ;; EN defaults
 ;;
 
-(load "locale/en")
+(./defmulti en/presets)
