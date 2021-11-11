@@ -5,7 +5,7 @@
    [clojure.spec.alpha :as s]))
 
 
-(alias '. 'soothe.core)
+(alias 'sth 'soothe.core)
 
 
 (defonce ^:private
@@ -139,4 +139,4 @@
 ;; EN defaults
 ;;
 
-(./defmulti en/presets)
+(sth/defmulti en/presets)

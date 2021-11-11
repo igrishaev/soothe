@@ -3,6 +3,9 @@
    [clojure.spec.alpha :as s]))
 
 
+(alias 'sth 'soothe.core)
+
+
 (def presets
   {`seq?                "The value must be a sequence."
    `char?               "The value must be a char."
@@ -70,10 +73,10 @@
 
    ;; special cases
 
-   ::missing-key
+   ::sth/missing-key
    (fn [{:keys [key]}]
      (format "The object misses the mandatory key '%s'."
              (-> key str (subs 1))))
 
-   ::default
+   ::sth/default
    "The value is incorrect."})

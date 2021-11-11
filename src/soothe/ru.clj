@@ -1,6 +1,6 @@
 (ns soothe.ru
   (:require
-   [soothe.core :as .]
+   [soothe.core :as sth]
    [clojure.spec.alpha :as s]))
 
 
@@ -71,13 +71,13 @@
 
    ;; special cases
 
-   ::missing-key
+   ::sth/missing-key
    (fn [{:keys [key]}]
      (format "The object misses the mandatory key '%s'."
              (-> key str (subs 1))))
 
-   ::default
+   ::sth/default
    "The value is incorrect."})
 
 
-(./defmulti presets)
+(sth/defmulti presets)

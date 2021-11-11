@@ -212,3 +212,25 @@ Problems:
 
        (sth/explain-data
         ::config {:port "five" :timeout "dunno"}))))
+
+
+(deftest test-plain-data
+
+  (is (=
+
+       {:problems
+        [{:message "The value must be a fixed precision integer."
+          :path []
+          :val "a"}]}
+
+       (sth/explain-data int? "a"))))
+
+
+(deftest test-coll-of
+
+  (is (=
+
+       1
+
+
+       (sth/explain-data (s/coll-of int?) [1 2 3 "a"]))))

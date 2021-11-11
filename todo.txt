@@ -7,3 +7,6 @@
 - readme
 - docstrings
 - autodoc
+
+
+(-> 'int? resolve symbol type)
