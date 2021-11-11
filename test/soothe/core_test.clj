@@ -236,3 +236,81 @@ Problems:
           :val "a"}]}
 
        (sth/explain-data (s/coll-of integer?) [1 2 3 "a"]))))
+
+
+(s/def ::master-spec integer?)
+
+(s/def ::minor-spec1 ::master-spec)
+(s/def ::minor-spec2 ::master-spec)
+
+(s/def ::proxy-case
+  (s/keys :req-un [::minor-spec1
+                   ::minor-spec2]))
+
+
+(deftest test-proxy-spec
+
+  (is (=
+
+       {:problems
+        [{:message "The value must be an integer."
+          :path [:minor-spec2]
+          :val "2"}]}
+
+       (sth/explain-data ::proxy-case {:minor-spec1 1
+                                       :minor-spec2 "2"}))))
+
+
+(s/def ::lvl1-spec
+  (s/keys :req-un [::lvl2-spec]))
+
+(s/def ::lvl2-spec
+  (fn [x]
+    (= x 42)))
+
+
+(deftest test-spec-ierarchy
+
+  (sth/def ::lvl1-spec "message for level 1")
+  (sth/def ::lvl2-spec "message for level 2")
+
+  (is (=
+
+       {:problems
+        [{:message "message for level 2"
+          :path [:lvl2-spec]
+          :val "haha"}]}
+
+       (sth/explain-data ::lvl1-spec
+                         {:lvl2-spec "haha"})))
+
+  (sth/undef ::lvl2-spec)
+
+  (is (=
+
+       {:problems
+        [{:message "message for level 1"
+          :path [:lvl2-spec]
+          :val "haha"}]}
+
+       (sth/explain-data ::lvl1-spec
+                         {:lvl2-spec "haha"})))
+
+  (sth/undef ::lvl1-spec))
+
+
+(deftest test-missing-key-priority
+
+  (sth/def ::lvl1-spec "message for level 1")
+
+  (is (=
+
+       {:problems
+        [{:message "The object misses the mandatory key 'lvl2-spec'."
+          :path []
+          :val {:no-required-key "passed"}}]}
+
+       (sth/explain-data ::lvl1-spec
+                         {:no-required-key "passed"})))
+
+  (sth/undef ::lvl1-spec))

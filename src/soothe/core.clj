@@ -57,16 +57,17 @@
          (when (symbol? pred)
            (resolve-by-symbol pred problem))
 
-         ;; Resovle by a keyword.
-         (when-let [spec (peek via)]
-           (resolve-message spec problem))
-
          ;; Special case: s/keys misses a key.
          (when-let [kw-key
                     (missing-key? problem)]
            (let [problem*
                  (assoc problem :key kw-key)]
              (resolve-message ::missing-key problem*)))
+
+         ;; Resovle by spec in a reverse order.
+         (some identity
+               (for [spec (reverse via)]
+                 (resolve-message spec problem)))
 
          ;; Special case: unwrap s/conformer.
          (when-let [pred-inner
