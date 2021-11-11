@@ -230,7 +230,9 @@ Problems:
 
   (is (=
 
-       1
+       {:problems
+        [{:message "The value must be an integer."
+          :path [3]
+          :val "a"}]}
 
-
-       (sth/explain-data (s/coll-of int?) [1 2 3 "a"]))))
+       (sth/explain-data (s/coll-of integer?) [1 2 3 "a"]))))

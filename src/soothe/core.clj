@@ -38,6 +38,14 @@
         pred-inner))))
 
 
+(defn- resolve-by-symbol [sym problem]
+  (if (qualified-symbol? sym)
+    (resolve-message sym problem)
+    (when-let [sym-qualified
+               (some-> sym resolve symbol)]
+      (resolve-message sym-qualified problem))))
+
+
 (defn- problem->error
   [{:as problem
     :keys [path pred val via in]}]
@@ -46,8 +54,8 @@
         (or
 
          ;; Resolve by a symbol.
-         (when (qualified-symbol? pred)
-           (resolve-message pred problem))
+         (when (symbol? pred)
+           (resolve-by-symbol pred problem))
 
          ;; Resovle by a keyword.
          (when-let [spec (peek via)]
@@ -63,14 +71,14 @@
          ;; Special case: unwrap s/conformer.
          (when-let [pred-inner
                     (conformer-pred? pred)]
-           (when (qualified-symbol? pred-inner)
-             (resolve-message pred-inner problem)))
+           (when (symbol? pred-inner)
+             (resolve-by-symbol pred-inner problem)))
 
          ;; Not found.
          (resolve-message ::default problem))]
 
     {:message message
-     :path path
+     :path in
      :val val}))
 
 
