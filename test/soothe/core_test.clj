@@ -138,7 +138,7 @@ Problems:
   path: [:name]
   value: nil
 
-- The value must be a fixed precision integer.
+- The value must be an integer.
   path: [:age]
   value: -0
 "))
@@ -219,7 +219,7 @@ Problems:
   (is (=
 
        {:problems
-        [{:message "The value must be a fixed precision integer."
+        [{:message "The value must be an integer."
           :path []
           :val "a"}]}
 

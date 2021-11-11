@@ -26,7 +26,7 @@
    `integer?            "The value must be an integer."
    `even?               "The value must be an even number."
    `odd?                "The value must be an odd number."
-   `int?                "The value must be a fixed precision integer."
+   `int?                "The value must be an integer."
    `pos-int?            "The value must be a positive integer."
    `neg-int?            "The value must be a negative integer."
    `nat-int?            "The value must be a natural integer."

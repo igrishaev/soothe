@@ -1,6 +1,7 @@
 
-- cljc files
+- use all the specs from via
 - translate ru
+- cljc files
 - tests for nodejs
 - lein/release/version
 - deploy to clojars
