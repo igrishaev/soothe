@@ -329,6 +329,31 @@ Problems:
                                        :minor-spec2 "2"}))))
 
 
+(s/def ::common-zero
+  (fn [x]
+    (= x 0)))
+
+(s/def ::this-zero ::common-zero)
+(s/def ::that-zero ::common-zero)
+
+(sth/def ::common-zero
+  "Must be a common zero!")
+
+(sth/def ::this-zero
+  "Must be this zero!")
+
+
+(deftest test-proxy-spec-wrapper
+
+  (is (=
+       {:problems [{:message "Must be this zero!" :path [] :val "a"}]}
+       (sth/explain-data ::this-zero "a")))
+
+  (is (=
+       {:problems [{:message "The value is incorrect." :path [] :val "a"}]}
+       (sth/explain-data ::that-zero "a"))))
+
+
 (s/def ::lvl1-spec
   (s/keys :req-un [::lvl2-spec]))
 
