@@ -1,5 +1,4 @@
 
-- translate ru
+- docstrings
 - deploy to clojars
 - readme
-- docstrings

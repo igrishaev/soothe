@@ -13,9 +13,6 @@
   :deploy-repositories
   {"releases" {:url "https://repo.clojars.org" :creds :gpg}}
 
-  :plugins
-  [[lein-shell "0.5.0"]]
-
   :codox
   {:output-path "gh-pages"}
 
@@ -33,7 +30,8 @@
 
   :profiles
   {:dev
-   {:plugins [[lein-codox "0.10.7"]]
+   {:plugins [[lein-shell "0.5.0"]
+              [lein-codox "0.10.7"]]
     :dependencies [[org.clojure/clojure "1.10.1"]]}
 
    :cljs
