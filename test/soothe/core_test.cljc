@@ -7,10 +7,10 @@
    #?(:cljs
       [soothe.js :refer [format]])
 
-   #?(:clj  [clojure.spec.alpha :as s]
+   #?(:clj [clojure.spec.alpha :as s]
       :cljs [cljs.spec.alpha :as s])
 
-   #?(:clj  [clojure.test :as t :refer [deftest is testing]]
+   #?(:clj [clojure.test :as t :refer [deftest is testing]]
       :cljs [cljs.test :as t :refer [deftest is testing]])))
 
 
@@ -255,15 +255,39 @@ Problems:
 
 
 
-#_
-(deftest test-coll-of
+(deftest test-coll-of-pred-is-unqualified
 
   (is (=
 
-       1
+       {:problems
+        [{:message "The value is incorrect."
+          :path [3]
+          :val "a"}]}
 
-       (s/explain-data
+       (sth/explain-data
         (s/coll-of int?) [1 2 3 "a"]))))
+
+
+(s/def ::is42?
+  (fn [x]
+    (= x 42)))
+
+
+(sth/def ::is42?
+  "The value is not 42.")
+
+
+(deftest test-coll-of-pred-is-spec
+
+  (is (=
+
+       {:problems
+        [{:message "The value is not 42."
+          :path [2]
+          :val -1}]}
+
+       (sth/explain-data
+        (s/coll-of ::is42?) [42 42 -1]))))
 
 
 (deftest test-map-of

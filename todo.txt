@@ -1,7 +1,5 @@
 
 - translate ru
-- cljc files
-- tests for nodejs
 - lein/release/version
 - deploy to clojars
 - readme

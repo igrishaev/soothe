@@ -8,10 +8,6 @@
    [soothe.en :as en]))
 
 
-#_
-(alias 'sth 'soothe.core)
-
-
 (defonce ^:private
   -registry (atom nil))
 
@@ -28,10 +24,12 @@
   [{:keys [pred]}]
   (when (seq? pred)
     (let [[sym-fn vec-% form-contains] pred]
-      (when (= [sym-fn vec-%] '[#?(:clj clojure.core/fn :cljs cljs.core/fn) [%]])
+      (when (= [sym-fn vec-%] '[#?(:clj clojure.core/fn
+                                   :cljs cljs.core/fn) [%]])
         (when (seq? form-contains)
           (let [[sym-contains % kw-key] form-contains]
-            (when (= [sym-contains %] '[#?(:clj clojure.core/contains? :cljs cljs.core/contains?)  %])
+            (when (= [sym-contains %] '[#?(:clj clojure.core/contains?
+                                           :cljs cljs.core/contains?) %])
               kw-key)))))))
 
 
