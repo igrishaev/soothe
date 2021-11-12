@@ -11,3 +11,9 @@ pom.xml.asc
 /.prepl-port
 .hgignore
 .hg/
+
+gh-pages
+node_modules
+package-lock.json
+TAGS
+/.idea

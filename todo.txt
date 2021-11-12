@@ -1,7 +1,5 @@
 
 - translate ru
-- lein/release/version
 - deploy to clojars
 - readme
 - docstrings
-- autodoc
