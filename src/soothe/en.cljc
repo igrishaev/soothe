@@ -1,10 +1,14 @@
 (ns soothe.en
   (:require
-   [clojure.spec.alpha :as s]))
+
+   #?(:cljs
+      [soothe.js :refer [format]])
+
+   #?(:clj  [clojure.spec.alpha :as s]
+      :cljs [cljs.spec.alpha :as s])))
 
 
-(alias 'sth 'soothe.core)
-
+;; (alias 'sth 'soothe.core)
 
 (def presets
   {`seq?                "The value must be a sequence."
@@ -73,10 +77,10 @@
 
    ;; special cases
 
-   ::sth/missing-key
+   :soothe.core/missing-key
    (fn [{:keys [key]}]
      (format "The object misses the mandatory key '%s'."
              (-> key str (subs 1))))
 
-   ::sth/default
+   :soothe.core/default
    "The value is incorrect."})

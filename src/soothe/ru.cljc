@@ -1,7 +1,12 @@
 (ns soothe.ru
   (:require
    [soothe.core :as sth]
-   [clojure.spec.alpha :as s]))
+
+   #?(:clj  [clojure.spec.alpha :as s]
+      :cljs [cljs.spec.alpha :as s])
+
+   #?(:cljs
+      [soothe.js :refer [format]])))
 
 
 (def presets

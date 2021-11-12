@@ -1,10 +1,14 @@
 (ns soothe.core
   (:refer-clojure :exclude [def defmulti])
   (:require
-   [soothe.en :as en]
-   [clojure.spec.alpha :as s]))
+
+   #?(:clj  [clojure.spec.alpha :as s]
+      :cljs [cljs.spec.alpha :as s])
+
+   [soothe.en :as en]))
 
 
+#_
 (alias 'sth 'soothe.core)
 
 
@@ -24,10 +28,10 @@
   [{:keys [pred]}]
   (when (seq? pred)
     (let [[sym-fn vec-% form-contains] pred]
-      (when (= [sym-fn vec-%] '[clojure.core/fn [%]])
+      (when (= [sym-fn vec-%] '[#?(:clj clojure.core/fn :cljs cljs.core/fn) [%]])
         (when (seq? form-contains)
           (let [[sym-contains % kw-key] form-contains]
-            (when (= [sym-contains %] '[clojure.core/contains? %])
+            (when (= [sym-contains %] '[#?(:clj clojure.core/contains? :cljs cljs.core/contains?)  %])
               kw-key)))))))
 
 
@@ -41,6 +45,7 @@
 (defn- resolve-by-symbol [sym problem]
   (if (qualified-symbol? sym)
     (resolve-message sym problem)
+    #_
     (when-let [sym-qualified
                (some-> sym resolve symbol)]
       (resolve-message sym-qualified problem))))
@@ -148,4 +153,4 @@
 ;; EN defaults
 ;;
 
-(sth/defmulti en/presets)
+(soothe.core/defmulti en/presets)

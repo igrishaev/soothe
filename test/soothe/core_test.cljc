@@ -3,8 +3,15 @@
    [soothe.core :as sth]
 
    [clojure.string :as str]
-   [clojure.spec.alpha :as s]
-   [clojure.test :refer [deftest is testing]]))
+
+   #?(:cljs
+      [soothe.js :refer [format]])
+
+   #?(:clj  [clojure.spec.alpha :as s]
+      :cljs [cljs.spec.alpha :as s])
+
+   #?(:clj  [clojure.test :as t :refer [deftest is testing]]
+      :cljs [cljs.test :as t :refer [deftest is testing]])))
 
 
 (s/def ::user
@@ -188,10 +195,18 @@ Problems:
     (int? val)
     val
     (string? val)
-    (try
-      (Integer/parseInt val)
-      (catch Exception e
-        ::s/invalid))
+
+    #?(:clj
+       (try
+         (Integer/parseInt val)
+         (catch Exception e
+           ::s/invalid))
+
+       :cljs
+       (let [result (js/parseInt val)]
+         (if (js/isNaN result)
+           ::s/invalid
+           result)))
     :else
     ::s/invalid))
 
@@ -239,16 +254,32 @@ Problems:
        (sth/explain-data int? "a"))))
 
 
+
+#_
 (deftest test-coll-of
 
   (is (=
 
-       {:problems
-        [{:message "The value must be an integer."
-          :path [3]
-          :val "a"}]}
+       1
 
-       (sth/explain-data (s/coll-of integer?) [1 2 3 "a"]))))
+       (s/explain-data
+        (s/coll-of int?) [1 2 3 "a"]))))
+
+
+(deftest test-map-of
+
+  (is (=
+
+       {:problems
+        [{:message "The value must be a number."
+          :path ["aaa" 1]
+          :val "test"}
+         {:message "The value must be a string."
+          :path [42333 0]
+          :val 42333}]}
+
+       (sth/explain-data (s/map-of string? number?)
+                         {"aaa" "test" 42333 3}))))
 
 
 (s/def ::master-spec integer?)
@@ -327,3 +358,14 @@ Problems:
                          {:no-required-key "passed"})))
 
   (sth/undef ::lvl1-spec))
+
+
+
+#?(:cljs
+
+   (do
+
+     (defn -main [& _]
+       (t/run-tests))
+
+     (set! *main-cli-fn* -main)))
