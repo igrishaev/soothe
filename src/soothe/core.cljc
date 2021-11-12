@@ -42,11 +42,7 @@
 
 (defn- resolve-by-symbol [sym problem]
   (if (qualified-symbol? sym)
-    (resolve-message sym problem)
-    #_
-    (when-let [sym-qualified
-               (some-> sym resolve symbol)]
-      (resolve-message sym-qualified problem))))
+    (resolve-message sym problem)))
 
 
 (defn- problem->error
