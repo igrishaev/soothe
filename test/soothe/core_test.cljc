@@ -214,7 +214,6 @@ Problems:
 (sth/def `->int
   "Cannot coerce the value to an integer.")
 
-
 (s/def ::config
   (s/keys :req-un [:config/port
                    :config/timeout]))
