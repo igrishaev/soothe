@@ -37,11 +37,11 @@ com.github.igrishaev/soothe {:mvn/version "0.1.0"}
 
 Clojure.spec is a piece of art yet misses some bits when dealing with error
 messages.  The standard `s/explain-data` gives a raw machinery output that
-bearly can be shown to the end user. This library is going to fix this.
+bearly can be shown to the end-user. This library is going to fix this.
 
-The idea of Soothe is extreamly simple. The library keeps its private registry
+The idea of Soothe is extremely simple. The library keeps its private registry
 of spec/pred => message pairs. The key is either a keyword referencing a spec or
-a full-qualified symbol meaning a predicate. The value of this map is either a
+a fully-qualified symbol meaning a predicate. The value of this map is either a
 plain string or a function that takes the problem map of the raw explain spec
 data.
 
@@ -68,14 +68,14 @@ a message using the following algorithm.
   value must be an integer"`.
 
 - When the `pred` is something different, try the `via` vector of specs. The
-  alorithm iterates the vector in reverse order. The first spec which has a
+  algorithm iterates the vector in reverse order. The first spec which has a
   message in the registry will succeed.
 
 - A special case when an `s/keys` spec misses a required key.
 
 - Another special case when the spec is wrapped with `s/conformer`.
 
-- Default message gets resolved.
+- The default message gets resolved.
 
 ## TL;DR: Code Samples
 
@@ -303,10 +303,10 @@ possible:
 
 (s/def ::port ->int)
 
-(sth/def `->int "Cannot coerce the value to integer.")
+(sth/def `->int "Cannot coerce the value to an integer.")
 
 (sth/explain-data ::port "dunno")
-;; you'll get "Cannot coerce the value to integer."
+;; you'll get "Cannot coerce the value to an integer."
 ~~~
 
 ### Special messages
@@ -340,9 +340,9 @@ The library ships predefined messages for all the `clojure.core` predicates:
 `int?`, `string?`, `uuid?` and so forth. They locate in the [en.cljs module][en]
 wich gets loaded automatically once you import `soothe.core`.
 
-There is also Russian version of the messages provided with the `soothe.ru`
+There is also a Russian version of the messages provided with the `soothe.ru`
 module. Once loaded, it overrides the messages in the registry. Just import it
-somewhere in you project:
+somewhere in your project:
 
 ~~~clojure
 (ns ...
@@ -356,7 +356,8 @@ You're welcome to submit your localized messages with a pull request.
 
 ## ClojureScript
 
-Soothe is fully compatible with ClojureScript ans thus can be used on frontend.
+Soothe is fully compatible with ClojureScript and thus can be used on the
+frontend.
 
 ## Best practices & Known cases
 
