@@ -2,6 +2,8 @@
 
 Clear error messages for Clojure.spec.
 
+[API Documentation](https://igrishaev.github.io/soothe/)
+
 ## Table of Contents
 
 <!-- toc -->
@@ -19,7 +21,34 @@ Clear error messages for Clojure.spec.
 
 ## Installation
 
-TODO: deploy to Clojars
+
+- Leiningen/Boot
+
+~~~clojure
+[com.github.igrishaev/soothe "0.1.0"]
+~~~
+
+- clojure CLI/deps.edn
+
+~~~clojure
+com.github.igrishaev/soothe {:mvn/version "0.1.0"}
+~~~
+
+- Gradle
+
+~~~
+implementation("com.github.igrishaev:soothe:0.1.0")
+~~~
+
+- Maven
+
+~~~xml
+<dependency>
+  <groupId>com.github.igrishaev</groupId>
+  <artifactId>soothe</artifactId>
+  <version>0.1.0</version>
+</dependency>
+~~~
 
 ## TL;DR/Examples
 
