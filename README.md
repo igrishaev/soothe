@@ -1,8 +1,13 @@
+
+<img align="left" src="art/real-soothe.jpeg">
+
 # Soothe
 
 Clear error messages for Clojure.spec, extremely simple and robust.
 
 [API Documentation](https://igrishaev.github.io/soothe/)
+
+---
 
 ## Table of Contents
 
