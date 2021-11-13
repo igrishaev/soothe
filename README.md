@@ -12,9 +12,10 @@ Clear error messages for Clojure.spec, extremely simple and robust.
 - [Concepts](#concepts)
 - [TL;DR: Code Samples](#tldr-code-samples)
 - [The API](#the-api)
+  * [Special messages](#special-messages)
 - [Pre-defined messages & Localization](#pre-defined-messages--localization)
 - [ClojureScript](#clojurescript)
-- [Known cases](#known-cases)
+- [Best practices & Known cases](#best-practices--known-cases)
 
 <!-- tocstop -->
 
@@ -60,19 +61,21 @@ For example:
 
 Soothe provides its own version of `explain-data`. When called, it prepares the
 raw Spec explain data and then remaps it. For each problem, Soothe tries to find
-a message using this algorithm:
+a message using the following algorithm.
 
-- when the `pred` field is a fully-qualified symbol, get the message from the
+- When the `pred` field is a fully-qualified symbol, get the message from the
   registry. For example, `clojure.core/int?` resolves into something like `"The
   value must be an integer"`.
 
-- when the `pred` is something different, try the `via` vector of specs. The
+- When the `pred` is something different, try the `via` vector of specs. The
   alorithm iterates the vector in reverse order. The first spec which has a
   message in the registry will succeed.
 
-- a special case when an `s/keys` spec misses a required key.
+- A special case when an `s/keys` spec misses a required key.
 
-- another special case when the spec is wrapped with `s/conformer`.
+- Another special case when the spec is wrapped with `s/conformer`.
+
+- Default message gets resolved.
 
 ## TL;DR: Code Samples
 
@@ -265,7 +268,7 @@ Define a message for a spec or a predicate using the `soothe.core/def` function:
 (sth/def `my-predicate "Some message")
 ~~~
 
-Please use the fully-qualified symbols. In the example above, the backtick
+Use fully-qualified symbols, not simple ones. In the example above, the backtick
 expands the symbol to the full form (with the current namespace).
 
 Defining a message for a spec:
@@ -283,21 +286,9 @@ The message might be a function that takes a preblem map and returns a string:
     (format "A custom message ... %s" ...)))
 ~~~
 
-There are two *special messages* at the moment. The first one is the
-`:soothe.core/missing-key` keyword which is used when a map misses a key. The
-default implementation is:
-
-~~~clojure
-:soothe.core/missing-key
-(fn [{:keys [key]}]
-  (format "The object misses the mandatory key '%s'."
-          (-> key str (subs 1))))
-~~~
-
-The library adds the `key` field into the problem map when detecting this case.
-
-The second special case is then the predicate is wrapped into the `s/conformer`
-spec. Soothe tries to find a message for the nested predicate if possible:
+The library handles the case when the predicate is wrapped into the
+`s/conformer` spec. Soothe tries to find a message for the nested predicate if
+possible:
 
 ~~~clojure
 (defn ->int
@@ -317,6 +308,25 @@ spec. Soothe tries to find a message for the nested predicate if possible:
 (sth/explain-data ::port "dunno")
 ;; you'll get "Cannot coerce the value to integer."
 ~~~
+
+### Special messages
+
+There are two *special messages* at the moment. The first one is the
+`:soothe.core/missing-key` keyword which is used when a map misses a key. The
+default implementation is:
+
+~~~clojure
+:soothe.core/missing-key
+(fn [{:keys [key]}]
+  (format "The object misses the mandatory key '%s'."
+          (-> key str (subs 1))))
+~~~
+
+The library adds the `key` field into the problem map when detecting this case.
+
+The second special message is `:soothe.core/default`. The default implementation
+is just a string `"The value is incorrect."` You're welcome to register a
+function for that key with a custom function.
 
 Use `(sth/def-many {...})` function to define several key/message pairs at once
 passing them as a map. The `(sth/undef ...)` function removes a message for the
@@ -346,6 +356,44 @@ You're welcome to submit your localized messages with a pull request.
 
 ## ClojureScript
 
-## Known cases
+Soothe is fully compatible with ClojureScript ans thus can be used on frontend.
+
+## Best practices & Known cases
+
+- Declare the messages right after you're declared the specs or predicates, for
+  example:
+
+~~~clojure
+(s/def ::my-spec ...) ;; your spec
+(sth/def ::my-spec "...") ;; the message
+
+;; or
+
+(defn check-email [string]...)
+(sth/def `check-email "...")
+~~~
+
+But don't put them in another namespace.
+
+- Some specs spoil the predicates, for example, `s/coll-of`. Imagine you have a
+  spec like this one:
+
+~~~clojure
+(s/def ::my-items (s/coll-of int?))
+~~~
+
+Now, if one of the items fails, the predicate will be not `'clojure.core/int?`
+but just a `'int?` which leads to the default error message. To handle this,
+bind the predicate to a spec and pass the spec:
+
+~~~clojure
+(s/def ::int? int?)
+(s/def ::my-items (s/coll-of ::int?))
+(sth/def ::int? "The value must be an integer.")
+~~~
+
+With this approach, the library will return the right error message.
+
+---
 
 Ivan Grishaev, 2021

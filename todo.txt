@@ -1,3 +1,1 @@
 
-- readme
-- deploy to clojars
