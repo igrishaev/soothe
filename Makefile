@@ -32,3 +32,7 @@ toc-install:
 
 toc-build:
 	node_modules/.bin/markdown-toc -i README.md
+
+.PHONY: release
+release:
+	lein release
