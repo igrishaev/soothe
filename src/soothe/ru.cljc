@@ -85,4 +85,4 @@
    "Неверное значение."})
 
 
-(sth/defmulti presets)
+(sth/def-many presets)

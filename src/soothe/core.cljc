@@ -1,5 +1,5 @@
 (ns soothe.core
-  (:refer-clojure :exclude [def defmulti])
+  (:refer-clojure :exclude [def])
   (:require
 
    #?(:clj  [clojure.spec.alpha :as s]
@@ -99,7 +99,7 @@
   nil)
 
 
-(defn defmulti
+(defn def-many
   [key->messages]
   (swap! -registry merge key->messages)
   nil)
@@ -147,4 +147,4 @@
 ;; EN defaults
 ;;
 
-(soothe.core/defmulti en/presets)
+(soothe.core/def-many en/presets)
