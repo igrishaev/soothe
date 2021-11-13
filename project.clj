@@ -1,4 +1,4 @@
-(defproject com.github.igrishaev/soothe "0.1.0"
+(defproject com.github.igrishaev/soothe "0.1.1-SNAPSHOT"
 
   :description
   "Turn Clojure.spec errors into human-readable text."
