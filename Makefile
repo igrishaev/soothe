@@ -25,3 +25,10 @@ gh-init:
 gh-build:
 	lein codox
 	cd gh-pages && git add -A && git commit -m "docs updated" && git push
+
+
+toc-install:
+	npm install --save markdown-toc
+
+toc-build:
+	node_modules/.bin/markdown-toc -i README.md
