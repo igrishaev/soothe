@@ -7,9 +7,6 @@
    #?(:clj  [clojure.spec.alpha :as s]
       :cljs [cljs.spec.alpha :as s])))
 
-
-;; (alias 'sth 'soothe.core)
-
 (def presets
   {`seq?                "The value must be a sequence."
    `char?               "The value must be a char."

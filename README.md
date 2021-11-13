@@ -10,12 +10,11 @@ Clear error messages for Clojure.spec, extremely simple and robust.
 
 - [Installation](#installation)
 - [Concepts](#concepts)
-- [Code Samples](#code-samples)
-- [API](#api)
+- [TL;DR: Code Samples](#tldr-code-samples)
+- [The API](#the-api)
+- [Pre-defined messages & Localization](#pre-defined-messages--localization)
 - [ClojureScript](#clojurescript)
-- [Localization](#localization)
 - [Known cases](#known-cases)
-- [Contribute](#contribute)
 
 <!-- tocstop -->
 
@@ -60,16 +59,22 @@ For example:
 ~~~
 
 Soothe provides its own version of `explain-data`. When called, it prepares the
-raw Spec explain data and then remaps it. For each problem, Soothe tries find a
-message using this algorithm:
+raw Spec explain data and then remaps it. For each problem, Soothe tries to find
+a message using this algorithm:
 
 - when the `pred` field is a fully-qualified symbol, get the message from the
   registry. For example, `clojure.core/int?` resolves into something like `"The
   value must be an integer"`.
 
-- TODO
+- when the `pred` is something different, try the `via` vector of specs. The
+  alorithm iterates the vector in reverse order. The first spec which has a
+  message in the registry will succeed.
 
-## Code Samples
+- a special case when an `s/keys` spec misses a required key.
+
+- another special case when the spec is wrapped with `s/conformer`.
+
+## TL;DR: Code Samples
 
 ~~~clojure
 
@@ -249,18 +254,98 @@ message using this algorithm:
 
 For more examples, see [the unit tests][tests].
 
+## The API
 
+Define a message for a spec or a predicate using the `soothe.core/def` function:
 
+~~~clojure
+(defn my-predicate [x]
+  ...)
 
+(sth/def `my-predicate "Some message")
+~~~
 
-## API
+Please use the fully-qualified symbols. In the example above, the backtick
+expands the symbol to the full form (with the current namespace).
+
+Defining a message for a spec:
+
+~~~clojure
+(s/def ::user (s/keys ...))
+(sth/def ::user "Message for the user spec")
+~~~
+
+The message might be a function that takes a preblem map and returns a string:
+
+~~~clojure
+(sth/def ::user
+  (fn [problem]
+    (format "A custom message ... %s" ...)))
+~~~
+
+There are two *special messages* at the moment. The first one is the
+`:soothe.core/missing-key` keyword which is used when a map misses a key. The
+default implementation is:
+
+~~~clojure
+:soothe.core/missing-key
+(fn [{:keys [key]}]
+  (format "The object misses the mandatory key '%s'."
+          (-> key str (subs 1))))
+~~~
+
+The library adds the `key` field into the problem map when detecting this case.
+
+The second special case is then the predicate is wrapped into the `s/conformer`
+spec. Soothe tries to find a message for the nested predicate if possible:
+
+~~~clojure
+(defn ->int
+  [val]
+  (cond
+    (int? val)
+    val
+    (string? val)
+    ;; (... try to parse the string ...)
+    :else
+    ::s/invalid))
+
+(s/def ::port ->int)
+
+(sth/def `->int "Cannot coerce the value to integer.")
+
+(sth/explain-data ::port "dunno")
+;; you'll get "Cannot coerce the value to integer."
+~~~
+
+Use `(sth/def-many {...})` function to define several key/message pairs at once
+passing them as a map. The `(sth/undef ...)` function removes a message for the
+passed key. To wipe all the messages, use `(sth/undef-all)`.
+
+## Pre-defined messages & Localization
+
+[en]: blob/master/src/soothe/en.cljc
+
+The library ships predefined messages for all the `clojure.core` predicates:
+`int?`, `string?`, `uuid?` and so forth. They locate in the [en.cljs module][en]
+wich gets loaded automatically once you import `soothe.core`.
+
+There is also Russian version of the messages provided with the `soothe.ru`
+module. Once loaded, it overrides the messages in the registry. Just import it
+somewhere in you project:
+
+~~~clojure
+(ns ...
+  (:require
+    [soothe.core :as sth]
+    soothe.ru ;; RU messages for spec
+    ...))
+~~~
+
+You're welcome to submit your localized messages with a pull request.
 
 ## ClojureScript
 
-## Localization
-
 ## Known cases
-
-## Contribute
 
 Ivan Grishaev, 2021
