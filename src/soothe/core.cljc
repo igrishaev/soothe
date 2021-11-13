@@ -94,34 +94,62 @@
 ;;
 
 (defn def
+  "
+  Define a message for a given spec or a predicate.
+  Arguments:
+  - either a keyword (spec) or a qualified symbol (for a predicate);
+  - either a string or 1-arg function that takes a problem map and returns a message.
+  "
   [kw-spec|sym-pred fn|message]
   (swap! -registry assoc kw-spec|sym-pred fn|message)
   nil)
 
 
 (defn def-many
+  "
+  Define multiple messages at once.
+  Takes a map of sym/keyword => message/function values.
+  "
   [key->messages]
   (swap! -registry merge key->messages)
   nil)
 
 
-(defn undef [kw-spec|sym-pred]
+(defn undef
+  "
+  Undefine a message for the given sym/kw.
+  "
+  [kw-spec|sym-pred]
   (swap! -registry dissoc kw-spec|sym-pred)
   nil)
 
 
-(defn undef-all []
+(defn undef-all
+  "
+  Undefine all the known messages.
+  "
+  []
   (reset! -registry nil)
   nil)
 
 
-(defn explain-data [spec value]
+(defn explain-data
+  "
+  Like s/explain-data: takes a spec and a value
+  and returns a map with the problem list. Each problem
+  has clear message found by either a predicate or a spec.
+  "
+  [spec value]
   (when-let [explain
              (s/explain-data spec value)]
     (map-explain->errors explain)))
 
 
-(defn explain [spec value]
+(defn explain
+  "
+  Prints the formatted output of explain-data.
+  "
+  [spec value]
   (when-let [{:keys [problems]}
              (explain-data spec value)]
 
@@ -138,7 +166,11 @@
       (println))))
 
 
-(defn explain-str [spec value]
+(defn explain-str
+  "
+  Like explain, but returns the captured output as a string.
+  "
+  [spec value]
   (with-out-str
     (explain spec value)))
 

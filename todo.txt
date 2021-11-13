@@ -1,4 +1,3 @@
 
-- docstrings
-- deploy to clojars
 - readme
+- deploy to clojars
