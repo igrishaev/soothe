@@ -19,7 +19,14 @@ test-all: test test-js
 
 
 gh-init:
-	git clone -b gh-pages --single-branch git@github.com:igrishaev/{PROJECT}.git gh-pages
+	git checkout --orphan gh-pages
+	git rm -rf .
+	git commit --allow-empty -m 'initial'
+	git push --set-upstream origin gh-pages
+
+
+gh-clone:
+	git clone -b gh-pages --single-branch git@github.com:igrishaev/${PROJECT}.git gh-pages
 
 
 gh-build:
