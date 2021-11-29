@@ -27,13 +27,13 @@ Clear error messages for Clojure.spec, extremely simple and robust.
 - Leiningen/Boot
 
 ~~~clojure
-[com.github.igrishaev/soothe "0.1.0"]
+[com.github.igrishaev/soothe "0.1.1"]
 ~~~
 
 - clojure CLI/deps.edn
 
 ~~~clojure
-com.github.igrishaev/soothe {:mvn/version "0.1.0"}
+com.github.igrishaev/soothe {:mvn/version "0.1.1"}
 ~~~
 
 ## Concepts
