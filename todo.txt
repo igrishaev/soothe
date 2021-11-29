@@ -1,1 +1,6 @@
-
+(s/def ::min-count
+  (s/cat :_ '#{clojure.core/<= cljs.core/<=}
+         :min-count int?
+         :_ (s/spec (s/cat :_ '#{clojure.core/count cljs.core/count}
+                           :_ '#{%}))
+         :_ '#{Integer/MAX_VALUE}))

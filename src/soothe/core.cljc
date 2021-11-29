@@ -20,17 +20,29 @@
       result)))
 
 
+(s/def ::missing-key
+  (s/cat :_ '#{clojure.core/fn cljs.core/fn}
+         :_ '#{[%]}
+         :contains (s/spec (s/cat :_ '#{clojure.core/contains? cljs.core/contains?}
+                                  :_ '#{%}
+                                  :key keyword?))))
+
+
+(defn- spec-parse [spec form result-path]
+  (let [parsed
+        (s/conform spec form)]
+    (when-not (s/invalid? parsed)
+      (get-in parsed result-path))))
+
+
 (defn- missing-key?
   [{:keys [pred]}]
-  (when (seq? pred)
-    (let [[sym-fn vec-% form-contains] pred]
-      (when (= [sym-fn vec-%] '[#?(:clj clojure.core/fn
-                                   :cljs cljs.core/fn) [%]])
-        (when (seq? form-contains)
-          (let [[sym-contains % kw-key] form-contains]
-            (when (= [sym-contains %] '[#?(:clj clojure.core/contains?
-                                           :cljs cljs.core/contains?) %])
-              kw-key)))))))
+  (spec-parse ::missing-key pred [:contains :key]))
+
+
+(defn- min-count?
+  [{:keys [pred]}]
+  (spec-parse ::min-count pred [:min-count]))
 
 
 (defn- conformer-pred? [pred]
@@ -180,3 +192,13 @@
 ;;
 
 (soothe.core/def-many en/presets)
+
+
+
+;; (def _form '(clojure.core/fn [%] (clojure.core/contains? % :bar)))
+
+;; (s/conform ::missing-key _form)
+
+;; (s/conform (s/cat :_1 '#{clojure.core/contains?}
+;;                     :_2 '#{%}
+;;                     :_3 keyword?) '(clojure.core/contains? % :bar))
